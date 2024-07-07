@@ -1,8 +1,9 @@
 // Import required modules
-const dotenv = require('dotenv').config();
-const express = require("express");
-const cors = require("cors");
-const mongoose = require("mongoose");
+import dotenv from 'dotenv';
+dotenv.config();
+import express from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
 
 // Initialize Express app
 const app = express();
@@ -18,7 +19,7 @@ mongoose.connect(process.env.MONGODB_URL)
   .catch((err) => console.log(err));
 
 // Define user schema
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
   email: {
     type: String,
     unique: true,
@@ -30,7 +31,7 @@ const userSchema = mongoose.Schema({
 const userModel = mongoose.model("user", userSchema);
 
 // Define tour schema
-const addToursSchema = mongoose.Schema({
+const addToursSchema = new mongoose.Schema({
   name: String,
   city: String,
   address: String,
@@ -66,22 +67,15 @@ app.post("/signup", async (req, res) => {
 });
 
 // Login route
-// const jwt = require('jsonwebtoken');
-
-// Login route
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
     const result = await userModel.findOne({ email: email, password: password }).exec();
     if (result) {
-      // Create JWT token
-      // const token = jwt.sign({ userId: result._id, email: result.email }, 'secret123', { expiresIn: '1h' });
-
       const dataSend = {
         _id: result._id,
         email: result.email,
         image: result.image,
-        // token: token 
       };
       res.send({ message: "Login is successful", alert: true, data: dataSend });
     } else {
@@ -91,7 +85,6 @@ app.post("/login", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 // Upload tour route
 app.post("/uploadtour", async (req, res) => {
@@ -116,5 +109,5 @@ app.get("/tour", async (req, res) => {
 
 // Start the server
 app.listen(PORT, () => {
-  // console.log("Server is running at port: " + PORT);
+  console.log(`Server is running at port: ${PORT}`);
 });
